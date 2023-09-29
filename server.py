@@ -4,6 +4,7 @@ import uvicorn
 
 from mongodb.db import init_db
 from routes.user_routes import user_route
+from routes.flashcards_routes import flashcard_route
 from routes.token_route import token_route
 from models.message_models import Message
 
@@ -31,6 +32,7 @@ def root() -> Message:
     return welcome_message
 
 app.include_router(user_route, prefix="/users", tags=["users"])
+app.include_router(flashcard_route, prefix="/flashcards", tags=["stacks"])
 app.include_router(token_route, tags=["token"])
 
 @app.on_event("startup")
