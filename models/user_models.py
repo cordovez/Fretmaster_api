@@ -29,7 +29,7 @@ class User(Document):
     email: Optional[EmailStr] | None = None
     username: Optional[str] | None = None
     password_hash: Optional[str] | None = None
-    stacks: list[Stack] = [] 
+    stacks: Optional[list[Stack]] = [] 
 
 
     class Settings:
@@ -51,7 +51,7 @@ class UserOut(BaseModel):
     email: EmailStr
     username: str
     created_at: datetime
-    things: List[Link[MyThing]]
+    stacks: List[Link[Stack]]
 
 
 class UserUpdate(BaseModel):

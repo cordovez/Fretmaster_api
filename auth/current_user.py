@@ -6,7 +6,7 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 
 from models.token_models import TokenData
-from models.user_model import UserBase
+from models.user_models import User
 
 from auth.authenticate_user import get_user_by_username
 
@@ -19,7 +19,7 @@ ALGORITHM = env["ALGORITHM"]
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
-async def get_current_user(token: UserBase = Depends(oauth2_scheme)):
+async def get_current_user(token: User = Depends(oauth2_scheme)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -39,7 +39,7 @@ async def get_current_user(token: UserBase = Depends(oauth2_scheme)):
     return user
 
 
-async def get_current_active_user(current_user: UserBase = Depends(get_current_user)):
+async def get_current_active_user(current_user: User = Depends(get_current_user)):
     if current_user.disabled:
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user

@@ -5,7 +5,6 @@ import uvicorn
 from mongodb.db import init_db
 from routes.user_routes import user_route
 from routes.token_route import token_route
-from routes.thing_routes import thing_route
 from models.message_models import Message
 
 
@@ -28,17 +27,14 @@ app.add_middleware(CORSMiddleware,
 def root() -> Message:
     """ Route is point of entry and publicly accessible
     """
-    welcome_message = Message(message="""Welcome to my FastApi boilerplate api. To view and use the routes, add '/docs' to the path that brought you to this page.""")
+    welcome_message = Message(message="""Welcome to my Fretmaster.""")
     return welcome_message
 
 app.include_router(user_route, prefix="/users", tags=["users"])
 app.include_router(token_route, tags=["token"])
-app.include_router(thing_route, tags=["things"])
 
 @app.on_event("startup")
 async def connect():
     await init_db()
-
-
 if __name__ == "__main__":
     uvicorn.run(reload=True, app="server:app")

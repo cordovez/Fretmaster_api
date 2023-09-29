@@ -1,7 +1,7 @@
 from fastapi.encoders import jsonable_encoder
 from fastapi import HTTPException, status
 
-from models.user_model import UserIn, UserBase
+from models.user_models import UserIn, User
 from models.message_models import Message
 from auth.password_hasher import get_password_hash
 
@@ -13,8 +13,8 @@ async def create_user( user: UserIn):
     passes it to the to the add_params() function.
     """
 
-    user_email = await UserBase.find_one({"email": user.email})
-    user_username = await UserBase.find_one({"username": user.username})
+    user_email = await User.find_one({"email": user.email})
+    user_username = await User.find_one({"username": user.username})
    
     if user_email is not None:
         raise HTTPException(
@@ -27,7 +27,7 @@ async def create_user( user: UserIn):
 
     with_added_information = add_params(user)
 
-    saved_user = await UserBase.create(with_added_information)
+    saved_user = await User.create(with_added_information)
     return saved_user
 
 
@@ -47,7 +47,7 @@ def add_params(user_in: UserIn):
     user_name = user_dict["username"]
     uri = f"https://api.multiavatar.com/{user_name}.png"
     avatar_dict = {"public_id": None, "uri": uri}
-    user = UserBase(
+    user = User(
         email=user_dict["email"],
         username=user_dict["username"],
         password_hash=hashed_password,
@@ -58,7 +58,7 @@ def add_params(user_in: UserIn):
 async def get_user(id: str):
     """ function takes the MongoDB document _id as a string, to search database.
     """
-    found = await UserBase.get(id)
+    found = await User.get(id)
     if not found:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     return found
@@ -67,13 +67,13 @@ async def get_user(id: str):
 async def get_users():
     """ function returns all users in the database as a list.
     """
-    all_users = await UserBase.find().to_list()
+    all_users = await User.find().to_list()
     return all_users
 
 
 async def update_user_data( id, user_update_data):
     update_data = user_update_data.dict(exclude_unset=True)
-    found_user = await UserBase.get(id)
+    found_user = await User.get(id)
     
     # duplicate_user =  found_user.copy(update=update_data, exclude={"_id"})
     updated_user = await found_user.update({"$set": update_data})
@@ -92,7 +92,7 @@ async def delete_user_by_id(id: str):
     for document and delete it.
     """
     success_message = Message(message="user deleted")
-    user_found = await UserBase.get(id)
+    user_found = await User.get(id)
     
     if user_found is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND)
@@ -103,7 +103,7 @@ async def delete_user_by_id(id: str):
 async def add_avatar_image(user):
     # Upload to Cloudinary
     # file_info = uploadImage(path_to_image)
-    user = await UserBase.get(user.id)
+    user = await User.get(user.id)
     
     await user.save()
 
@@ -112,7 +112,7 @@ async def add_avatar_image(user):
 async def add_generic_avatar(user):
     """Function to automatically add a generic avatar on new user create"""
 
-    user = await UserBase.get(user._id)
+    user = await User.get(user._id)
     user.avatar = "https://api.multiavatar.com/"+user.username+".png"
 
     await user.save()
