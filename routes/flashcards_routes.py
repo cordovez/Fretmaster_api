@@ -24,7 +24,7 @@ async def add_stack( stack: str, current_user: Annotated[User, Depends(get_curre
     """Route takes stack name to create stack and add to current user document. 
     To do: convert stack type to Enum?"""
     
-    new_stack = await available_stacks[stack]
+    new_stack= await available_stacks[stack]
     return new_stack
     # await add_stack_to_user(current_user, new_stack)
     # return current_user
