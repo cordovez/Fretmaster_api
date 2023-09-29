@@ -8,8 +8,7 @@ from typing import Optional, List
 from beanie import Document, Link
 from pydantic import BaseModel, EmailStr, ConfigDict
 
-from models.thing_model import MyThing
-
+from models.flashcards_models import Stack
 
 
 central_europe = pytz.timezone('Europe/Paris')
@@ -19,7 +18,7 @@ class ImageBase(BaseModel):
     public_id: str
     uri: str
 
-class UserBase(Document):
+class User(Document):
     """User database representation"""
     model_config = ConfigDict(extra='allow') 
     
@@ -30,7 +29,8 @@ class UserBase(Document):
     email: Optional[EmailStr] | None = None
     username: Optional[str] | None = None
     password_hash: Optional[str] | None = None
-    things: Optional[List[Link[MyThing]]] | None = []
+    stacks: list[Stack] = [] 
+
 
     class Settings:
         name = "Users"
