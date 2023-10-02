@@ -21,6 +21,7 @@ class Card(BaseModel):
     score: Optional[str]
     previous_view: Optional[datetime] 
     next_view: Optional[datetime]
+    owner: str
 
 class Stack(Document):
     """ name: str, cards: list"""
@@ -29,6 +30,10 @@ class Stack(Document):
     
     class Settings:
         name = "Stacks"
+        
+class Group(Document):
+    group_name: str
+    group_stacks: list[Stack]
 
 
         

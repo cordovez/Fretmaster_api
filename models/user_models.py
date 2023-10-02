@@ -29,7 +29,7 @@ class User(Document):
     email: Optional[EmailStr] | None = None
     username: Optional[str] | None = None
     password_hash: Optional[str] | None = None
-    stacks: Optional[list[Stack]] = [] 
+    stacks: Optional[List[Link[Stack]]] = []
 
 
     class Settings:

@@ -10,7 +10,7 @@ from auth.current_user import get_current_user
 from models.user_models import User, UserIn, UserUpdate, UserOut
 from models.message_models import Message
 from controllers.user_controllers import (create_user, get_users, get_user,
-                                          delete_user_by_id, update_user_data)
+                                          delete_user_by_id, update_user_data, add_stack_to_user)
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
@@ -30,6 +30,14 @@ async def add_user_to_db( user: UserIn)-> UserOut:
     
     return new_user
 
+
+@user_route.post("/add-stack")
+async def add_stack(stack, current_user: Annotated[User, 
+                                                 Depends(get_current_user)]):
+    result = await add_stack_to_user(stack, current_user)
+    updated_stacks =   current_user.stacks
+    return result 
+    
 # Read
 @user_route.get("/all")
 async def read_all_users(current_user: Annotated[User, 
@@ -51,16 +59,12 @@ async def read_user_me( current_user: Annotated[User,
     """
     return current_user
 
-@user_route.get("/my_things")
+@user_route.get("/my_stacks")
 async def get_my_things(current_user: Annotated[User, 
                                                    Depends(get_current_user)]):
-#    list_of_things =[]
-#    for thing in current_user.things:
-#        found = await MyThing.find_all({thing.owner == current_user.username})
-#        await list_of_things.append(found.thing_name)
     
    user = await User.get(str(current_user.id), fetch_links=True)
-   return user.things    
+   return user.stacks    
 
 # Update
 @user_route.patch("/{id}/update")

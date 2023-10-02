@@ -1,10 +1,20 @@
 from fastapi.encoders import jsonable_encoder
 from fastapi import HTTPException, status
-
 from models.user_models import UserIn, User
 from models.message_models import Message
+from models.flashcards_models import Stack
+
+from utils.add_triads import triads, inversions
 from auth.password_hasher import get_password_hash
 
+STACK_BUILDERS = {
+    "triads" : triads,
+    "inversions" : inversions,
+}
+
+""" 
+POST
+"""
 async def create_user( user: UserIn):
     """This function verifies that neither the username nor email passed in as 
     'user' parameters, exist in the database.
@@ -54,7 +64,41 @@ def add_params(user_in: UserIn):
         avatar=avatar_dict
     )
     return user
-  
+
+async def add_stack_to_user(stack, user ):
+    # Do we have the correct stack name?
+    if stack not in STACK_BUILDERS:
+        raise HTTPException(
+            status.HTTP_409_CONFLICT, detail="That is the incorrect name of a stack"
+        )
+    # Get all the Stack document with fetch_links
+    reveal_user_stacks = await User.get(user.id, fetch_links=True)   
+    user_stacks = reveal_user_stacks.stacks
+    
+    # Get the names of the stacks the user has already  
+    user_stack_names = []    
+    if user_stacks is not None:
+        for existing in user_stacks:
+            user_stack_names.append(existing.name)
+    
+    created_stacks =  await STACK_BUILDERS[stack](user.username)
+    
+    # Verify that the new stack created does not exist already
+    for each_stack in created_stacks:
+        if each_stack.name in user_stack_names:
+            raise HTTPException(
+            status.HTTP_409_CONFLICT, detail="That stack already exists"
+        )
+    
+    for each_stack in created_stacks:
+        user.stacks.append(each_stack)
+    await user.save()
+    return created_stacks
+   
+
+""" 
+GET
+"""
 async def get_user(id: str):
     """ function takes the MongoDB document _id as a string, to search database.
     """
@@ -70,7 +114,9 @@ async def get_users():
     all_users = await User.find().to_list()
     return all_users
 
-
+"""
+Patch
+"""
 async def update_user_data( id, user_update_data):
     update_data = user_update_data.dict(exclude_unset=True)
     found_user = await User.get(id)
