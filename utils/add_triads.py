@@ -20,17 +20,7 @@ async def triads(username):
         
     for stack in stacks:
         await Stack.create(stack)
-    # new_group = Group(group_name="Triads", group_stacks=stacks)
     return stacks
 
 def inversions():
      pass
-
-# available_stacks = {
-#     "triads": triads,
-#     "inversions": inversions,
-# }
-# async def add_stack_to_user(user, stack):
-#     found_user =  await User.get(user.id)
-#     print("User: ", found_user.stacks.append(stack))
-#     await found_user.stacks.append(stack)
