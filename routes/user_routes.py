@@ -35,7 +35,6 @@ async def add_user_to_db( user: UserIn)-> UserOut:
 async def add_stack(stack, current_user: Annotated[User, 
                                                  Depends(get_current_user)]):
     result = await add_stack_to_user(stack, current_user)
-    updated_stacks =   current_user.stacks
     return result 
     
 # Read
