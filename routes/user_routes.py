@@ -13,7 +13,7 @@ from models.message_models import Message
 from controllers.user_controllers import (
     delete_user,
     update_user_data,
-    add_stack_to_user,
+    add_stack_reference_to_user,
 )
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -26,8 +26,11 @@ user_route = APIRouter()
 
 @user_route.post("/add-stack")
 async def add_stack(
-    stack: StackName, current_user: Annotated[User, Depends(get_current_user)]
-) -> list[Stack]:
+    stack: str, current_user: Annotated[User, Depends(get_current_user)]
+):
+    # async def add_stack(
+    #     stack: str, current_user: Annotated[User, Depends(get_current_user)]
+    # ) -> list[Stack]:
     """Route adds a specified "stack" of flashcards
 
     Args:
@@ -37,7 +40,7 @@ async def add_stack(
     Returns:
         Stack: the new stack
     """
-    result = await add_stack_to_user(stack, current_user)
+    result = await add_stack_reference_to_user(stack, current_user)
     return result
 
 

@@ -7,15 +7,24 @@ from datetime import datetime
 from typing import Optional
 
 from beanie import Document, Link
-from pydantic import BaseModel, EmailStr, ConfigDict
+from pydantic import BaseModel
 
 
 central_europe = pytz.timezone("Europe/Paris")
 
 
 class StackName(str, Enum):
-    triads = ("triads",)
+    triads = "triads"
     inversions = "inversions"
+
+
+class UserCardStats(BaseModel):
+    """Adds user-specific information to each card"""
+
+    user: str
+    score: Optional[int] | None = 0
+    previous_view: Optional[datetime] | None = None
+    next_view: Optional[datetime] | None = None
 
 
 class Card(BaseModel):
@@ -24,10 +33,7 @@ class Card(BaseModel):
     image: Optional[str]
     question: str
     answer: str
-    score: Optional[str]
-    previous_view: Optional[datetime]
-    next_view: Optional[datetime]
-    owner_stats: str
+    users: list[Link[UserCardStats]] = []
 
 
 class Stack(Document):
@@ -38,8 +44,3 @@ class Stack(Document):
 
     class Settings:
         name = "Stacks"
-
-
-class Group(Document):
-    group_name: str
-    group_stacks: list[Stack]
