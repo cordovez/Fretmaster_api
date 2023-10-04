@@ -4,9 +4,9 @@ import uvicorn
 
 from mongodb.db import init_db
 from routes.user_routes import user_route
-from routes.flashcards_routes import flashcard_route
+from routes.admin_routes import admin_router
 from routes.token_route import token_route
-from models.message_models import Message
+from routes.public_routes import public_route
 
 
 app = FastAPI()
@@ -16,27 +16,25 @@ origins = [
     "http://localhost:8000",
 ]
 
-app.add_middleware(CORSMiddleware, 
-                   allow_origins= origins, 
-                   allow_credentials = True, 
-                   allow_methods=["*"], 
-                   allow_headers=["*"], )
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
+app.include_router(public_route, tags=["public access"])
+app.include_router(user_route, prefix="/me", tags=["current user"])
+app.include_router(admin_router, prefix="/admin", tags=["admin"])
+app.include_router(token_route, tags=["login"])
 
-@app.get("/", tags=["root"])
-def root() -> Message:
-    """ Route is point of entry and publicly accessible
-    """
-    welcome_message = Message(message="""Welcome to my Fretmaster.""")
-    return welcome_message
-
-app.include_router(user_route, prefix="/users", tags=["users"])
-app.include_router(flashcard_route, prefix="/flashcards", tags=["stacks"])
-app.include_router(token_route, tags=["token"])
 
 @app.on_event("startup")
 async def connect():
     await init_db()
+
+
 if __name__ == "__main__":
     uvicorn.run(reload=True, app="server:app")

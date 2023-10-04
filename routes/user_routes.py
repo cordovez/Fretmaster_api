@@ -2,88 +2,84 @@
 User registration router
 """
 
-from fastapi import APIRouter, Depends 
+from fastapi import APIRouter, Depends
 from typing import Annotated
 from fastapi.security import OAuth2PasswordBearer
 
 from auth.current_user import get_current_user
-from models.user_models import User, UserIn, UserUpdate, UserOut
+from models.user_models import User, UserIn, UserUpdate, UserOut, UserOutMinimal
+from models.flashcards_models import StackName, Stack
 from models.message_models import Message
-from controllers.user_controllers import (create_user, get_users, get_user,
-                                          delete_user_by_id, update_user_data, add_stack_to_user)
+from controllers.user_controllers import (
+    delete_user,
+    update_user_data,
+    add_stack_to_user,
+)
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 user_route = APIRouter()
+
+
 # Create
-@user_route.post("/add")
-async def add_user_to_db( user: UserIn)-> UserOut:
-    """To create a new user, you only need to pass in email, username, and
-    password (model: UserIn).
-    
-    The password will be converted to a hash before saving and a generic avatar 
-    will be generated.
-    
-    Return is a database document (model: User)
-    """
-    new_user = await create_user(user)
-    
-    return new_user
 
 
 @user_route.post("/add-stack")
-async def add_stack(stack, current_user: Annotated[User, 
-                                                 Depends(get_current_user)]):
-    result = await add_stack_to_user(stack, current_user)
-    return result 
-    
-# Read
-@user_route.get("/all")
-async def read_all_users(current_user: Annotated[User, 
-                                                 Depends(get_current_user)])->list[User]:
-    """ Route takes current_user as parameter, which requires ('Depends' on)
-    the authorization 'get_current_user'. 
+async def add_stack(
+    stack: StackName, current_user: Annotated[User, Depends(get_current_user)]
+) -> list[Stack]:
+    """Route adds a specified "stack" of flashcards
+
+    Args:
+        stack (StackName): name of the stack
+        current_user (Annotated[User, Depends): currently signed-on user
+
+    Returns:
+        Stack: the new stack
     """
-    users_list = await get_users()
+    result = await add_stack_to_user(stack, current_user)
+    return result
 
-    return users_list
 
-@user_route.get("/me" ) 
-async def read_user_me( current_user: Annotated[User, 
-                                                   Depends(get_current_user)])-> UserOut:
-    """ Route takes an id and current_user as parameters.  Route requires
-    ('Depends' on) the authorization 'get_current_user'. 
-    
+# Read
+
+
+@user_route.get("/profile")
+async def read_user_me(
+    current_user: Annotated[User, Depends(get_current_user)]
+) -> UserOut:
+    """Route takes an id and current_user as parameters.  Route requires
+    ('Depends' on) the authorization 'get_current_user'.
+
     It searches for the id in the database and returns db document (model: User)
     """
-    return current_user
+    found_user = await User.get(current_user.id, fetch_links=True)
+    return found_user
 
-@user_route.get("/my_stacks")
-async def get_my_things(current_user: Annotated[User, 
-                                                   Depends(get_current_user)]):
-    
-   user = await User.get(str(current_user.id), fetch_links=True)
-   return user.stacks    
+
+@user_route.get("/stacks")
+async def get_my_things(
+    current_user: Annotated[User, Depends(get_current_user)]
+) -> list[Stack]:
+    user = await User.get(current_user.id, fetch_links=True)
+    return user.stacks
+
 
 # Update
-@user_route.patch("/{id}/update")
-async def update_user(id,
+@user_route.patch("/update")
+async def update_user(
     update_data: UserUpdate,
     current_user: Annotated[User, Depends(get_current_user)],
-) :
-    
-    updated_this = await update_user_data(id, update_data )
-    return updated_this
-    
-    
+) -> UserOut:
+    result = await update_user_data(update_data, current_user)
+    return result
+
 
 # Delete
-@user_route.delete('/{id}/remove')
-async def delete_user(id:str, current_user: Annotated[User, 
-                                              Depends(get_current_user)]
-) -> Message :
-    user_has_been_deleted = await delete_user_by_id(id)
-    
+@user_route.delete("/remove")
+async def delete_current_user(
+    current_user: Annotated[User, Depends(get_current_user)]
+) -> Message:
+    user_has_been_deleted = await delete_user(current_user)
+
     return user_has_been_deleted
-
-
