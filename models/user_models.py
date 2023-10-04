@@ -10,7 +10,7 @@ from beanie import Document, Link
 from pydantic import BaseModel, EmailStr, ConfigDict, Field
 
 from models.flashcards_models import Stack
-from utils.object_id import PyObjectId
+from utils.object_id import ObjectIdField
 
 
 central_europe = pytz.timezone("Europe/Paris")
@@ -47,7 +47,7 @@ class UserIn(BaseModel):
 
 
 class UserOutMinimal(BaseModel):
-    id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
+    id: ObjectIdField = Field(default_factory=ObjectIdField, alias="_id")
     username: str
     admin: bool
     first_name: Optional[str]
@@ -55,6 +55,7 @@ class UserOutMinimal(BaseModel):
     email: EmailStr
 
     class Config:
+        arbitrary_types_allowed = True
         json_encoders = {ObjectId: str}
 
 
