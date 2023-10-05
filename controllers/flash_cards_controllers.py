@@ -6,6 +6,6 @@ from utils.stack_builder import stack
 groups = {"triads": {"C triads": c_major, "F triads": f_major}}
 
 
-async def add_stack_group(stack_name):
-    group_stacks = await stack(groups[stack_name], stack_name)
-    return group_stacks
+async def add_stack_group(group_name):
+    stack_group = await stack(groups[group_name], group_name)
+    return stack_group

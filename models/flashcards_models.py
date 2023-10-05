@@ -2,11 +2,12 @@
 User Models
 """
 import pytz
+import pymongo
 from enum import Enum
 from datetime import datetime
 from typing import Optional
 
-from beanie import Document, Link
+from beanie import Document, Link, Indexed
 from pydantic import BaseModel
 
 
@@ -39,7 +40,7 @@ class Card(BaseModel):
 class Stack(Document):
     """name: str, cards: list"""
 
-    group: Optional[str] | None = None
+    group: Optional[Indexed(str, index_type=pymongo.TEXT)] | None = None
     stack: str
     cards: list[Card]
 
