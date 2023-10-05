@@ -3,11 +3,11 @@ from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
 from mongodb.db import init_db
-from routes.user_routes import user_route
+from routes.user_routes import user_router
 from routes.admin_routes import admin_router
 from routes.token_route import token_route
-from routes.public_routes import public_route
-
+from routes.public_routes import public_router
+from routes.stacks_routes import stack_router
 
 app = FastAPI()
 
@@ -25,10 +25,11 @@ app.add_middleware(
 )
 
 
-app.include_router(public_route, tags=["public access"])
-app.include_router(user_route, prefix="/me", tags=["current user"])
-app.include_router(admin_router, prefix="/admin", tags=["admin"])
+app.include_router(public_router, tags=["public access"])
 app.include_router(token_route, tags=["login"])
+app.include_router(user_router, prefix="/me", tags=["current user"])
+app.include_router(stack_router, prefix="/stacks", tags=["stacks"])
+app.include_router(admin_router, prefix="/admin", tags=["admin"])
 
 
 @app.on_event("startup")

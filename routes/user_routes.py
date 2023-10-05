@@ -8,7 +8,7 @@ from fastapi.security import OAuth2PasswordBearer
 
 from auth.current_user import get_current_user
 from models.user_models import User, UserIn, UserUpdate, UserOut, UserOutMinimal
-from models.flashcards_models import StackName, Stack
+from models.flashcards_models import GroupName, Stack
 from models.message_models import Message
 from controllers.user_controllers import (
     delete_user,
@@ -18,13 +18,13 @@ from controllers.user_controllers import (
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-user_route = APIRouter()
+user_router = APIRouter()
 
 
 # Create
 
 
-@user_route.post("/add-stack")
+@user_router.post("/add-stack")
 async def add_stack(
     stack: str, current_user: Annotated[User, Depends(get_current_user)]
 ):
@@ -47,7 +47,7 @@ async def add_stack(
 # Read
 
 
-@user_route.get("/profile")
+@user_router.get("/profile")
 async def read_user_me(
     current_user: Annotated[User, Depends(get_current_user)]
 ) -> UserOut:
@@ -60,7 +60,7 @@ async def read_user_me(
     return found_user
 
 
-@user_route.get("/stacks")
+@user_router.get("/stacks")
 async def get_my_things(
     current_user: Annotated[User, Depends(get_current_user)]
 ) -> list[Stack]:
@@ -69,7 +69,7 @@ async def get_my_things(
 
 
 # Update
-@user_route.patch("/update")
+@user_router.patch("/update")
 async def update_user(
     update_data: UserUpdate,
     current_user: Annotated[User, Depends(get_current_user)],
@@ -79,7 +79,7 @@ async def update_user(
 
 
 # Delete
-@user_route.delete("/remove")
+@user_router.delete("/remove")
 async def delete_current_user(
     current_user: Annotated[User, Depends(get_current_user)]
 ) -> Message:

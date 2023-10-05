@@ -5,13 +5,13 @@ from models.message_models import Message
 from models.flashcards_models import Stack
 from beanie import UpdateResponse
 
-from utils.add_triads import triads, inversions
+# from utils.add_triads import triads, inversions
 from auth.password_hasher import get_password_hash
 
-STACK_BUILDERS = {
-    "triads": triads,
-    "inversions": inversions,
-}
+# STACK_BUILDERS = {
+#     "triads": triads,
+#     "inversions": inversions,
+# }
 
 """ 
 POST

@@ -13,7 +13,7 @@ from pydantic import BaseModel
 central_europe = pytz.timezone("Europe/Paris")
 
 
-class StackName(str, Enum):
+class GroupName(str, Enum):
     triads = "triads"
     inversions = "inversions"
 
@@ -21,7 +21,7 @@ class StackName(str, Enum):
 class UserCardStats(BaseModel):
     """Adds user-specific information to each card"""
 
-    user: str
+    user: Optional[str] | None = None
     score: Optional[int] | None = 0
     previous_view: Optional[datetime] | None = None
     next_view: Optional[datetime] | None = None
@@ -33,13 +33,14 @@ class Card(BaseModel):
     image: Optional[str]
     question: str
     answer: str
-    users: list[Link[UserCardStats]] = []
+    card_stats: Optional[list[Link[UserCardStats]]] = []
 
 
 class Stack(Document):
     """name: str, cards: list"""
 
-    name: str
+    group: Optional[str] | None = None
+    stack: str
     cards: list[Card]
 
     class Settings:
