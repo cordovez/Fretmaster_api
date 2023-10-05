@@ -2,7 +2,7 @@ from fastapi.encoders import jsonable_encoder
 from fastapi import HTTPException, status
 from models.user_models import UserIn, User
 from models.message_models import Message
-from models.flashcards_models import Stack, GroupName
+from models.flashcards_models import Stack, GroupName, UserCardStats
 from beanie import UpdateResponse
 
 # from utils.add_triads import triads, inversions
@@ -18,13 +18,29 @@ POST
 """
 
 
+# async def add_stats(user):
+#     stats = UserCardStats(user=user.username)
+#     found_user = await User.get(user.id)
+#     user_stacks = found_user.stack.to_list()
+
+#     for group in user_stacks:
+#         for card in group["cards"]:
+#             card.card_stats.append(stats)
+
+
 async def add_card_group_reference_to_user(group, user):
+    stats = UserCardStats(user=user.username)
     found_groups = await Stack.find(Stack.group == group).to_list()
+    for group in found_groups:
+        for card in group.cards:
+            card.card_stats.append(stats)
+
     found_user = await User.find_one(User.id == user.id)
 
-    updated_user = await found_user.update({"$set": {"stacks": found_groups}})
-    await updated_user.save()
-    return updated_user
+    user_with_stacks = await found_user.update({"$set": {"stacks": found_groups}})
+    await user_with_stacks.save()
+
+    return user_with_stacks
 
 
 """ 
