@@ -22,9 +22,9 @@ async def add_card_group_reference_to_user(group, user):
     found_groups = await Stack.find(Stack.group == group).to_list()
     found_user = await User.find_one(User.id == user.id)
 
-    await found_user.update({"$set": {"stacks": found_groups}})
-    found_user = await User.find_one(User.id == user.id)
-    return found_user
+    updated_user = await found_user.update({"$set": {"stacks": found_groups}})
+    await updated_user.save()
+    return updated_user
 
 
 """ 

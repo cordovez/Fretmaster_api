@@ -50,7 +50,7 @@ async def read_user_me(
 
 
 @user_router.get("/stacks")
-async def get_my_things(
+async def get_my_stacks(
     current_user: Annotated[User, Depends(get_current_user)]
 ) -> list[Stack]:
     user = await User.get(current_user.id, fetch_links=True)
