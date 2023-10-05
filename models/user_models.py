@@ -68,7 +68,7 @@ class UserOut(BaseModel):
     email: EmailStr
     username: str
     created_at: datetime
-    stacks: List[Link[Stack]]
+    stacks: list
 
 
 class UserUpdate(BaseModel):

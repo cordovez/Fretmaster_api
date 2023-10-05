@@ -9,11 +9,7 @@ async def card_constructor(groups):
     for group, data in groups.items():
         card_list = []
         for k, v in data.items():
-            card = Card(
-                image=None,
-                question=str(v),
-                answer=k,
-            )
+            card = Card(image=None, question=str(v), answer=str(k), card_stats=[])
             card_list.append(card)
         card_groups[group] = card_list
 
@@ -21,15 +17,6 @@ async def card_constructor(groups):
 
 
 async def stack_builder(card_groups, group_name):
-    # for group, data in card_groups.items():
-    #     stacks = []
-
-    #     new_stack = Stack(name=stack_name, cards=group)
-    #     stacks.append(new_stack)
-
-    # for stack in stacks:
-    #     await Stack.create(stack)
-    # return stacks
     groups = []
     for group, data in card_groups.items():
         groups.append({group: data})

@@ -13,8 +13,9 @@ from models.message_models import Message
 from controllers.user_controllers import (
     delete_user,
     update_user_data,
-    add_stack_reference_to_user,
+    add_card_group_reference_to_user,
 )
+from controllers.flash_cards_controllers import stack
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
@@ -26,21 +27,9 @@ user_router = APIRouter()
 
 @user_router.post("/add-stack")
 async def add_stack(
-    stack: str, current_user: Annotated[User, Depends(get_current_user)]
+    group: GroupName, current_user: Annotated[User, Depends(get_current_user)]
 ):
-    # async def add_stack(
-    #     stack: str, current_user: Annotated[User, Depends(get_current_user)]
-    # ) -> list[Stack]:
-    """Route adds a specified "stack" of flashcards
-
-    Args:
-        stack (StackName): name of the stack
-        current_user (Annotated[User, Depends): currently signed-on user
-
-    Returns:
-        Stack: the new stack
-    """
-    result = await add_stack_reference_to_user(stack, current_user)
+    result = await add_card_group_reference_to_user(group, current_user)
     return result
 
 

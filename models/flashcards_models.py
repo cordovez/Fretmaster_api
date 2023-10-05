@@ -1,5 +1,5 @@
 """
-User Models
+Card models
 """
 import pytz
 import pymongo
@@ -24,6 +24,7 @@ class UserCardStats(BaseModel):
 
     user: Optional[str] | None = None
     score: Optional[int] | None = 0
+    created_at: Optional[datetime] = datetime.now(central_europe)
     previous_view: Optional[datetime] | None = None
     next_view: Optional[datetime] | None = None
 
@@ -34,13 +35,13 @@ class Card(BaseModel):
     image: Optional[str]
     question: str
     answer: str
-    card_stats: Optional[list[Link[UserCardStats]]] = []
+    card_stats: Optional[list[UserCardStats]]
 
 
 class Stack(Document):
     """name: str, cards: list"""
 
-    group: Optional[Indexed(str, index_type=pymongo.TEXT)] | None = None
+    group: Indexed(str, index_type=pymongo.TEXT)
     stack: str
     cards: list[Card]
 

@@ -2,7 +2,7 @@ from fastapi.encoders import jsonable_encoder
 from fastapi import HTTPException, status
 from models.user_models import UserIn, User
 from models.message_models import Message
-from models.flashcards_models import Stack
+from models.flashcards_models import Stack, GroupName
 from beanie import UpdateResponse
 
 # from utils.add_triads import triads, inversions
@@ -18,41 +18,13 @@ POST
 """
 
 
-async def add_stack_reference_to_user(stack, user):
-    found_stack = await Stack.find_one(Stack.name == stack)
-    # found_user = User.get(user.id)
-    # temp_list = [found_stack]
-    # updated_user = await found_user.update({"$set": {"stacks": found_stack}})
+async def add_card_group_reference_to_user(group, user):
+    found_groups = await Stack.find(Stack.group == group).to_list()
+    found_user = await User.find_one(User.id == user.id)
 
-    return found_stack
-    # return updated_user
-
-
-# async def add_stack_to_user(stack, user):
-#     # Get all the Stack document with fetch_links
-#     reveal_user_stacks = await User.get(user.id, fetch_links=True)
-#     user_stacks = reveal_user_stacks.stacks
-
-#     # Get the names of the stacks the user has already
-#     user_stack_names = []
-#     if user_stacks is not None:
-#         for existing in user_stacks:
-#             user_stack_names.append(existing.name)
-
-#     # see Dictionary Dispatch Patter (https://youtu.be/bL0Y-aEnlgY?si=m2pMm7sBGXCUyHkE)
-#     created_stacks = await STACK_BUILDERS[stack](user.username)
-
-#     # Verify that the new stack created does not exist already
-#     for each_stack in created_stacks:
-#         if each_stack.name in user_stack_names:
-#             raise HTTPException(
-#                 status.HTTP_409_CONFLICT, detail="That stack already exists"
-#             )
-
-#     for each_stack in created_stacks:
-#         user.stacks.append(each_stack)
-#     await user.save()
-#     return created_stacks
+    await found_user.update({"$set": {"stacks": found_groups}})
+    found_user = await User.find_one(User.id == user.id)
+    return found_user
 
 
 """ 
