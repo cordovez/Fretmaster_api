@@ -40,6 +40,9 @@ class Card(Document):
     answer: str
     card_stats: Optional[list[Link[UserCardStats]]] | None = []
 
+    class Settings:
+        name = "Cards"
+
 
 class Stack(BaseModel):
     """name: str, cards: list"""

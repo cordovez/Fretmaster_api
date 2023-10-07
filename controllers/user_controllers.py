@@ -22,19 +22,6 @@ async def add_cards_to_user(stack_name, current_user):
     return card_groups_in_stacks
 
 
-# async def add_card_group_reference_to_user(group, user):
-#     stats = UserCardStats(user=user.username)
-#     found_groups = await Stack.find(Stack.group == group).to_list()
-
-#     for group in found_groups:
-#         for card in group.cards:
-#             card.card_stats = stats
-#     updated_user = await User.get(user.id)
-#     updated_user.stacks = found_groups
-#     await updated_user.save()
-#     return found_groups
-
-
 """ 
 GET
 """
