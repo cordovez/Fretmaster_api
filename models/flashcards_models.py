@@ -7,8 +7,8 @@ from enum import Enum
 from datetime import datetime
 from typing import Optional
 
-from beanie import Document, Link, Indexed
-from pydantic import BaseModel
+from beanie import Document, Link, Indexed, View
+from pydantic import BaseModel, Field
 
 
 central_europe = pytz.timezone("Europe/Paris")
@@ -36,7 +36,7 @@ class UserCardStats(Document):
 class Card(Document):
     """keys are: image, question, answer, score, previous_viewed, next_view"""
 
-    image: Optional[str]
+    image: Optional[str] | None = None
     question: str
     answer: str
     card_stats: Optional[list[Link[UserCardStats]]] | None = []

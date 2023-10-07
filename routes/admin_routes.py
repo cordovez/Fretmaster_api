@@ -20,8 +20,7 @@ admin_router = APIRouter()
 # Read
 @admin_router.get("/all_stacks")
 async def read_all_stacks(current_user: Annotated[User, Depends(get_current_user)]):
-    stacks = await get_stacks(current_user)
-    return stacks
+    pass
 
 
 @admin_router.get("/all_users")
@@ -39,4 +38,4 @@ async def create_admin_user(
 ):
     new_admin = await make_admin(new_admin_username, current_user)
 
-    return new_admin
+    return f"{new_admin.username} has been made admin"

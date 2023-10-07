@@ -2,7 +2,27 @@ from fastapi import HTTPException, status
 from models.flashcards_models import Card, UserCardStats, Stack
 
 
+async def find_all_available_questions():
+    list_of_cards = await Card.find_all().to_list()
+    return [card.question for card in list_of_cards]
+
+
+async def incoming_questions(data):
+    questions = []
+    for group, cards in data.items():
+        for answer, question in cards.items():
+            questions.append(str(question))
+    return questions
+
+
 async def card_compiler(group_data, stack_name, current_user):
+    existing_questions = await find_all_available_questions()
+    questions = await incoming_questions(group_data)
+
+    for question in questions:
+        if question in existing_questions:
+            raise HTTPException(status.HTTP_409_CONFLICT, detail="card already exists")
+
     card_groups = {}
     for group, data in group_data.items():
         card_list = []
@@ -16,7 +36,7 @@ async def card_compiler(group_data, stack_name, current_user):
             card_list.append(card)
         card_groups[group] = card_list
 
-    return card_groups
+    return questions
 
 
 async def stack_compiler(card_groups, stack_name, current_user):

@@ -47,7 +47,8 @@ class UserIn(BaseModel):
 
 
 class UserOutMinimal(BaseModel):
-    id: ObjectIdField = Field(default_factory=ObjectIdField, alias="_id")
+    id: str = Field(alias="_id")
+    # id: ObjectIdField = Field(default_factory=ObjectIdField, alias="_id")
     username: str
     admin: bool
     first_name: Optional[str]

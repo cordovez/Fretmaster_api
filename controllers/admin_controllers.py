@@ -1,5 +1,5 @@
 from fastapi import HTTPException, status
-from models.flashcards_models import Stack
+from models.flashcards_models import Stack, Card
 from models.user_models import User
 
 
@@ -7,7 +7,7 @@ async def get_stacks(user):
     if not user.admin:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED)
 
-    stacks = await Stack.find().to_list()
+    stacks = await Card.find().to_list()
     return f"Currently there are {len(stacks)} stacks. They need to be organised"
 
 

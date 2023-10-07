@@ -22,7 +22,7 @@ async def get_all_stacks():
     return stack_list
 
 
-@stack_router.post("/add")
+@stack_router.post("/add", summary="Add cards in stack")
 async def add_stack_to_db(
     stack_name: StackName, current_user: Annotated[User, Depends(get_current_user)]
 ):
