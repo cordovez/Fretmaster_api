@@ -3,13 +3,12 @@ User registration router
 """
 
 from fastapi import APIRouter, Depends
-from typing import Annotated
 from fastapi.security import OAuth2PasswordBearer
+from typing import Annotated
 
 from auth.current_user import get_current_user
-from models.user_models import User, UserIn, UserUpdate, UserOut, UserOutMinimal
 from models.flashcards_models import GroupName, Stack
-from models.message_models import Message
+from models.user_models import User
 from controllers.flash_cards_controllers import add_stack_group
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -24,6 +23,8 @@ async def get_all_stacks():
 
 
 @stack_router.post("/add")
-async def add_stack_to_db(group_name: GroupName):
-    added_stack = await add_stack_group(group_name)
+async def add_stack_to_db(
+    group_name: GroupName, current_user: Annotated[User, Depends(get_current_user)]
+):
+    added_stack = await add_stack_group(group_name, current_user)
     return added_stack

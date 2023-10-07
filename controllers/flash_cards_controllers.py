@@ -12,6 +12,6 @@ groups = {
 }
 
 
-async def add_stack_group(group_name):
-    stack_group = await stack(groups[group_name], group_name)
+async def add_stack_group(group_name, user):
+    stack_group = await stack(groups[group_name], group_name, user)
     return stack_group

@@ -1,46 +1,38 @@
-from fastapi.encoders import jsonable_encoder
 from fastapi import HTTPException, status
-from models.user_models import UserIn, User
+
+from models.user_models import User
 from models.message_models import Message
-from models.flashcards_models import Stack, GroupName, UserCardStats
-from beanie import UpdateResponse
+from models.flashcards_models import Stack, UserCardStats
 
-# from utils.add_triads import triads, inversions
-from auth.password_hasher import get_password_hash
+from utils.data_compilers import card_compiler, stack_compiler
+from data.card_groups import groups
 
-# STACK_BUILDERS = {
-#     "triads": triads,
-#     "inversions": inversions,
-# }
 
 """ 
 POST
 """
 
 
-# async def add_stats(user):
+async def add_cards_to_user(group_name, current_user):
+    cards_in_groups = await card_compiler(groups[group_name], group_name, current_user)
+    card_groups_in_stacks = await stack_compiler(
+        cards_in_groups, group_name, current_user
+    )
+
+    return card_groups_in_stacks
+
+
+# async def add_card_group_reference_to_user(group, user):
 #     stats = UserCardStats(user=user.username)
-#     found_user = await User.get(user.id)
-#     user_stacks = found_user.stack.to_list()
+#     found_groups = await Stack.find(Stack.group == group).to_list()
 
-#     for group in user_stacks:
-#         for card in group["cards"]:
-#             card.card_stats.append(stats)
-
-
-async def add_card_group_reference_to_user(group, user):
-    stats = UserCardStats(user=user.username)
-    found_groups = await Stack.find(Stack.group == group).to_list()
-    for group in found_groups:
-        for card in group.cards:
-            card.card_stats.append(stats)
-
-    found_user = await User.find_one(User.id == user.id)
-
-    user_with_stacks = await found_user.update({"$set": {"stacks": found_groups}})
-    await user_with_stacks.save()
-
-    return user_with_stacks
+#     for group in found_groups:
+#         for card in group.cards:
+#             card.card_stats = stats
+#     updated_user = await User.get(user.id)
+#     updated_user.stacks = found_groups
+#     await updated_user.save()
+#     return found_groups
 
 
 """ 

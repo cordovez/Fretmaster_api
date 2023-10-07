@@ -19,7 +19,7 @@ class GroupName(str, Enum):
     inversions = "inversions"
 
 
-class UserCardStats(BaseModel):
+class UserCardStats(Document):
     """Adds user-specific information to each card"""
 
     user: Optional[str] | None = None
@@ -28,21 +28,24 @@ class UserCardStats(BaseModel):
     previous_view: Optional[datetime] | None = None
     next_view: Optional[datetime] | None = None
 
+    class Settings:
+        name = "Card Stats"
 
-class Card(BaseModel):
+
+class Card(Document):
     """keys are: image, question, answer, score, previous_viewed, next_view"""
 
     image: Optional[str]
     question: str
     answer: str
-    card_stats: Optional[list[UserCardStats]]
+    card_stats: Optional[list[Link[UserCardStats]]] | None = []
 
 
-class Stack(Document):
+class Stack(BaseModel):
     """name: str, cards: list"""
 
-    group: Indexed(str, index_type=pymongo.TEXT)
     stack: str
+    group: Indexed(str, index_type=pymongo.TEXT)
     cards: list[Card]
 
     class Settings:

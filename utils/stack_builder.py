@@ -1,7 +1,4 @@
-from models.flashcards_models import Card, Stack, UserCardStats
-from data.triads import c_major, f_major
-
-# group_data = {"C major": c_major, "F major": f_major}
+from models.flashcards_models import Card, Stack
 
 
 async def card_constructor(groups):
@@ -16,7 +13,7 @@ async def card_constructor(groups):
     return card_groups
 
 
-async def stack_builder(card_groups, group_name):
+async def stack_builder(card_groups, group_name, owner):
     groups = []
     for group, data in card_groups.items():
         groups.append({group: data})
@@ -33,9 +30,9 @@ async def stack_builder(card_groups, group_name):
     return stacks
 
 
-async def stack(group_data, name):
+async def stack(group_data, group_name, owner):
     cards = await card_constructor(group_data)
-    stack = await stack_builder(cards, name)
+    stack = await stack_builder(cards, group_name, owner)
 
     # return cards
     return stack

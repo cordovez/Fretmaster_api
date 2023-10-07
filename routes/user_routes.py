@@ -7,15 +7,14 @@ from typing import Annotated
 from fastapi.security import OAuth2PasswordBearer
 
 from auth.current_user import get_current_user
-from models.user_models import User, UserIn, UserUpdate, UserOut, UserOutMinimal
+from models.user_models import User, UserIn, UserUpdate, UserOut
 from models.flashcards_models import GroupName, Stack
 from models.message_models import Message
 from controllers.user_controllers import (
     delete_user,
     update_user_data,
-    add_card_group_reference_to_user,
+    add_cards_to_user,
 )
-from controllers.flash_cards_controllers import stack
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
@@ -25,12 +24,12 @@ user_router = APIRouter()
 # Create
 
 
-@user_router.post("/add-stack")
-async def add_stack(
-    group: GroupName, current_user: Annotated[User, Depends(get_current_user)]
+@user_router.post("/add-cards")
+async def add_cards(
+    group_name: GroupName, current_user: Annotated[User, Depends(get_current_user)]
 ):
-    result = await add_card_group_reference_to_user(group, current_user)
-    return result
+    added_stack = await add_cards_to_user(group_name, current_user)
+    return added_stack
 
 
 # Read

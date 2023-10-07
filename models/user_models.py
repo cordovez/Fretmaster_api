@@ -34,7 +34,7 @@ class User(Document):
     email: Optional[EmailStr] | None = None
     username: Optional[str] | None = None
     password_hash: Optional[str] | None = None
-    stacks: List[Link[Stack]] = []
+    stacks: List[Stack] | None = []
 
     class Settings:
         name = "Users"
