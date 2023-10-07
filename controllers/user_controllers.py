@@ -13,10 +13,10 @@ POST
 """
 
 
-async def add_cards_to_user(group_name, current_user):
-    cards_in_groups = await card_compiler(groups[group_name], group_name, current_user)
+async def add_cards_to_user(stack_name, current_user):
+    cards_in_groups = await card_compiler(groups[stack_name], stack_name, current_user)
     card_groups_in_stacks = await stack_compiler(
-        cards_in_groups, group_name, current_user
+        cards_in_groups, stack_name, current_user
     )
 
     return card_groups_in_stacks

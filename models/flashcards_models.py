@@ -14,7 +14,7 @@ from pydantic import BaseModel
 central_europe = pytz.timezone("Europe/Paris")
 
 
-class GroupName(str, Enum):
+class StackName(str, Enum):
     triads = "triads"
     inversions = "inversions"
 

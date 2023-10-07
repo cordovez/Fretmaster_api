@@ -1,9 +1,8 @@
 from fastapi import HTTPException, status
 from models.flashcards_models import Card, UserCardStats, Stack
-from models.user_models import User
 
 
-async def card_compiler(group_data, group_name, current_user):
+async def card_compiler(group_data, stack_name, current_user):
     user_stats = UserCardStats(user=current_user.username)
     await user_stats.create()
     card_groups = {}
@@ -20,22 +19,22 @@ async def card_compiler(group_data, group_name, current_user):
     return card_groups
 
 
-async def stack_compiler(card_groups, group_name, current_user):
+async def stack_compiler(card_groups, stack_name, current_user):
     new_list_of_stacks = [stack for stack in current_user.stacks]
-    if group_name in current_user.stacks:
+
+    if stack_already_exist(new_list_of_stacks, stack_name):
         raise HTTPException(status.HTTP_409_CONFLICT)
 
     for group, data in card_groups.items():
-        new_stack = Stack(stack=group_name, group=group, cards=data)
+        new_stack = Stack(stack=stack_name, group=group, cards=data)
         new_list_of_stacks.append(new_stack)
 
     current_user.stacks = new_list_of_stacks
     await current_user.save()
-    return current_user
+    return new_list_of_stacks
 
 
-def stack_already_exist(list_of_stacks, group_name):
+def stack_already_exist(list_of_stacks, stack_name):
     for group in list_of_stacks:
-        for key, data in group.items():
-            if key["stack"] == group_name:
-                return False
+        if group.stack == stack_name:
+            raise HTTPException(status.HTTP_409_CONFLICT)

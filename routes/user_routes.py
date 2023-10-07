@@ -8,7 +8,7 @@ from fastapi.security import OAuth2PasswordBearer
 
 from auth.current_user import get_current_user
 from models.user_models import User, UserIn, UserUpdate, UserOut
-from models.flashcards_models import GroupName, Stack
+from models.flashcards_models import StackName, Stack
 from models.message_models import Message
 from controllers.user_controllers import (
     delete_user,
@@ -26,9 +26,9 @@ user_router = APIRouter()
 
 @user_router.post("/add-cards")
 async def add_cards(
-    group_name: GroupName, current_user: Annotated[User, Depends(get_current_user)]
+    stack_name: StackName, current_user: Annotated[User, Depends(get_current_user)]
 ):
-    added_stack = await add_cards_to_user(group_name, current_user)
+    added_stack = await add_cards_to_user(stack_name, current_user)
     return added_stack
 
 
