@@ -1,8 +1,10 @@
 from fastapi import HTTPException, status
 
+from functools import reduce
+
 from models.user_models import User
 from models.message_models import Message
-from models.flashcards_models import Stack, UserCardStats
+from models.flashcards_models import Card
 
 from utils.data_compilers import card_compiler, stack_compiler
 from data.card_groups import groups
@@ -33,6 +35,34 @@ async def get_user(id: str):
     if not found:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     return found
+
+
+def get_list_of_stacks(current_user):
+    stacks = current_user.stacks
+    set_of_stacks = set()
+    for stack in stacks:
+        set_of_stacks.add(stack.stack)
+
+    return set_of_stacks
+
+
+async def get_stack_cards(stack_name, current_user):
+    this_user = await User.get(current_user.id)
+    stacks = this_user.stacks
+    cards = []
+
+    for stack in stacks:
+        if stack.stack == stack_name:
+            cards.append(stack.cards)
+
+    consolidated_cards = reduce(lambda x, y: x + y, cards, [])
+    expanded_cards = []
+
+    for card in consolidated_cards:
+        expanded_card = await Card.get(card.id, fetch_links=True)
+        expanded_cards.append(expanded_card)
+
+    return expanded_cards
 
 
 """

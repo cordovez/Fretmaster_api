@@ -3,12 +3,12 @@ from models.flashcards_models import Card, UserCardStats, Stack
 
 
 async def card_compiler(group_data, stack_name, current_user):
-    user_stats = UserCardStats(user=current_user.username)
-    await user_stats.create()
     card_groups = {}
     for group, data in group_data.items():
         card_list = []
         for k, v in data.items():
+            user_stats = UserCardStats(user=current_user.username, question=str(v))
+            await user_stats.create()
             card = Card(
                 image=None, question=str(v), answer=str(k), card_stats=[user_stats]
             )

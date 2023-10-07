@@ -22,6 +22,7 @@ class StackName(str, Enum):
 class UserCardStats(Document):
     """Adds user-specific information to each card"""
 
+    question: Optional[str] | None = None
     user: Optional[str] | None = None
     score: Optional[int] | None = 0
     created_at: Optional[datetime] = datetime.now(central_europe)

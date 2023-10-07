@@ -14,6 +14,8 @@ from controllers.user_controllers import (
     delete_user,
     update_user_data,
     add_cards_to_user,
+    get_list_of_stacks,
+    get_stack_cards,
 )
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -24,7 +26,7 @@ user_router = APIRouter()
 # Create
 
 
-@user_router.post("/add-cards")
+@user_router.post("/add-cards", summary="Add all cards in stack")
 async def add_cards(
     stack_name: StackName, current_user: Annotated[User, Depends(get_current_user)]
 ):
@@ -35,7 +37,7 @@ async def add_cards(
 # Read
 
 
-@user_router.get("/profile")
+@user_router.get("/profile", summary="User profile")
 async def read_user_me(
     current_user: Annotated[User, Depends(get_current_user)]
 ) -> UserOut:
@@ -48,12 +50,18 @@ async def read_user_me(
     return found_user
 
 
-@user_router.get("/stacks")
-async def get_my_stacks(
-    current_user: Annotated[User, Depends(get_current_user)]
-) -> list[Stack]:
-    user = await User.get(current_user.id, fetch_links=True)
-    return user.stacks
+@user_router.get("/stacks", summary="User's available stacks")
+async def get_my_stacks(current_user: Annotated[User, Depends(get_current_user)]):
+    available_stacks = get_list_of_stacks(current_user)
+    return available_stacks
+
+
+@user_router.get("/cards", summary="Cards by stack name")
+async def get_my_cards(
+    stack_name: StackName, current_user: Annotated[User, Depends(get_current_user)]
+):
+    cards_by_stack_name = await get_stack_cards(stack_name, current_user)
+    return cards_by_stack_name
 
 
 # Update
