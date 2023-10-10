@@ -45,12 +45,12 @@ class Card(Document):
         name = "Cards"
 
 
-class Stack(BaseModel):
+class Stack(Document):
     """name: str, cards: list"""
 
     stack: str
     group: Indexed(str, index_type=pymongo.TEXT)
-    cards: list[Card]
+    cards: Optional[list[Link[Card]]] | None = None
 
     class Settings:
         name = "Stacks"
