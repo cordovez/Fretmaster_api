@@ -11,7 +11,7 @@ async def add_stack_group(stack_name, user):
         for q, a in data.items():
             new_card = Card(question=q, answer=a)
             await new_card.create()
-            new_stack.cards.append(new_card)
+            new_stack.cards.append(new_card)  # type: ignore
         await new_stack.create()
 
         stacks.append(new_stack)

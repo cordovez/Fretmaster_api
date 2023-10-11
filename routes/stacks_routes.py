@@ -2,14 +2,15 @@
 User registration router
 """
 
-from fastapi import APIRouter, Depends
-from fastapi.security import OAuth2PasswordBearer
 from typing import Annotated
 
+from fastapi import APIRouter, Depends
+from fastapi.security import OAuth2PasswordBearer
+
 from auth.current_user import get_current_user
-from models.flashcards_models import StackName, Stack
-from models.user_models import User
 from controllers.flash_cards_controllers import add_stack_group
+from models.flashcards_models import Stack, StackName
+from models.user_models import User
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
